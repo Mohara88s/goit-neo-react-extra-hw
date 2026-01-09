@@ -1,6 +1,6 @@
 import { FaPhone, FaUserLarge } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
-import { deleteContact } from "../../redux/contactsOps";
+import { deleteContact } from "../../redux/contacts/operations";
 import Button from "@mui/material/Button";
 import style from "./Contact.module.css";
 

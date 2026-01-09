@@ -2,10 +2,9 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useId } from "react";
 import Button from "@mui/material/Button";
-import style from "./ContactForm.module.css";
-
 import { useDispatch } from "react-redux";
-import { addContact } from "../../redux/contactsOps";
+import { addContact } from "../../redux/contacts/operations";
+import style from "./ContactForm.module.css";
 
 const phoneRegExp = /^\d{3}-\d{2}-\d{2}$/;
 

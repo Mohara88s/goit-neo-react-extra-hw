@@ -1,51 +1,85 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchContacts } from "../../redux/contactsOps";
-import { selectLoading, selectError } from "../../redux/contactsSlice";
-import Section from "../Section/Section";
-import Container from "../Container/Container";
-import ContactForm from "../ContactForm/ContactForm";
-import SearchBox from "../SearchBox/SearchBox";
-import ContactList from "../ContactList/ContactList";
+import { Route, Routes } from "react-router-dom";
+import { PrivateRoute } from "../PrivateRoute/PrivateRoute";
+import { RestrictedRoute } from "../RestrictedRoute/RestrictedRoute";
+import { refreshUser } from "../../redux/auth/operations";
+import { selectIsRefreshing } from "../../redux/auth/selectors";
 import { ClipLoader } from "react-spinners";
-import toast from "react-hot-toast";
-import style from "./App.module.css";
+import css from "./App.module.css";
+
+const Layout = lazy(() => import("../../layouts/Layout/Layout"));
+const HomePage = lazy(() => import("../../pages/HomePage/HomePage"));
+const RegisterPage = lazy(() =>
+	import("../../pages/RegisterPage/RegisterPage")
+);
+const LoginPage = lazy(() => import("../../pages/LoginPage/LoginPage"));
+const ContactsPage = lazy(() =>
+	import("../../pages/ContactsPage/ContactsPage")
+);
+const NotFoundView = lazy(() =>
+	import("../../pages/NotFoundPage/NotFoundPage")
+);
 
 export default function App() {
 	const dispatch = useDispatch();
-	const loading = useSelector(selectLoading);
-	const error = useSelector(selectError);
+	const isRefreshing = useSelector(selectIsRefreshing);
 
 	useEffect(() => {
-		dispatch(fetchContacts());
+		dispatch(refreshUser());
 	}, [dispatch]);
 
-	useEffect(() => {
-		if (error) {
-			toast.error(`Error: ${error}`);
-		}
-	}, [error]);
+	return isRefreshing ? (
+		<ClipLoader
+			color="#1976d2"
+			size={50}
+			aria-label="Loading Spinner"
+			data-testid="loader"
+		/>
+	) : (
+		<div className={css.app}>
+			<Suspense
+				fallback={
+					<ClipLoader
+						color="#1976d2"
+						size={50}
+						aria-label="Loading Spinner"
+						data-testid="loader"
+					/>
+				}
+			>
+				<Routes>
+					<Route path="/" element={<Layout />}>
+						<Route path="/" element={<HomePage />} />
 
-	return (
-		<>
-			<Section>
-				<Container>
-					<div className={style.box}>
-						<h1 className={style.h1}>Phonebook</h1>
-						{loading && !error && (
-							<ClipLoader
-								color="#1976d2"
-								size={40}
-								aria-label="Loading Spinner"
-								data-testid="loader"
-							/>
-						)}
-					</div>
-					<ContactForm />
-					<SearchBox />
-					<ContactList />
-				</Container>
-			</Section>
-		</>
+						<Route
+							path="/register"
+							element={
+								<RestrictedRoute redirectTo="/" component={<RegisterPage />} />
+							}
+						/>
+
+						<Route
+							path="/login"
+							element={
+								<RestrictedRoute redirectTo="/" component={<LoginPage />} />
+							}
+						/>
+
+						<Route
+							path="/contacts"
+							element={
+								<PrivateRoute
+									redirectTo="/login"
+									component={<ContactsPage />}
+								/>
+							}
+						/>
+
+						<Route path="*" element={<NotFoundView />}></Route>
+					</Route>
+				</Routes>
+			</Suspense>
+		</div>
 	);
 }
