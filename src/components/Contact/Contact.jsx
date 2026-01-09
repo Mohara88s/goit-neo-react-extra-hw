@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { FaPhone, FaUserLarge } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
 import { deleteContact } from "../../redux/contacts/operations";
 import Button from "@mui/material/Button";
+import ResponsiveDialog from "../ResponsiveDialog/ResponsiveDialog";
 import style from "./Contact.module.css";
 
 export default function Contact({ contact: { id, name, number } }) {
 	const dispatch = useDispatch();
+	const [openDialog, setOpenDialog] = useState(false);
 
 	return (
 		<div className={style.contact_card}>
@@ -23,11 +26,21 @@ export default function Contact({ contact: { id, name, number } }) {
 				variant="outlined"
 				color="primary"
 				onClick={() => {
-					dispatch(deleteContact(id));
+					setOpenDialog(true);
 				}}
 			>
 				Delete
 			</Button>
+
+			<ResponsiveDialog
+				open={openDialog}
+				onAccept={() => {
+					dispatch(deleteContact(id));
+				}}
+				onDecline={() => {
+					setOpenDialog(false);
+				}}
+			/>
 		</div>
 	);
 }
