@@ -41,8 +41,9 @@ export const deleteContact = createAsyncThunk(
 );
 
 export const patchContact = createAsyncThunk(
-    'contacts/addContact',
-    async (taskId, newContactData, thunkAPI) => {
+    'contacts/patchContact',
+    async ([taskId, newContactData], thunkAPI) => {
+        console.log(taskId, newContactData)
         try {
             const response = await axios.patch(`/contacts/${taskId}`, newContactData);
             toast.success("The Contact is patched");

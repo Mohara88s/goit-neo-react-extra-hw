@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchContacts, addContact, deleteContact } from './operations';
+import { fetchContacts, addContact, deleteContact, patchContact } from './operations';
 import { logOut } from '../auth/operations';
 
 const handlePending = (state) => {
@@ -46,6 +46,16 @@ const contactsSlice = createSlice({
                 state.items.splice(index, 1);
             })
             .addCase(deleteContact.rejected, handleRejected)
+            .addCase(patchContact.fulfilled, (state, action) => {
+                const updatedContact = action.payload;
+                const index = state.items.findIndex(
+                    (contact) => contact.id === updatedContact.id
+                );
+                if (index !== -1) {
+                    state.items[index] = updatedContact;
+                }
+
+            })
             .addCase(logOut.fulfilled, (state) => {
                 state.items = [];
                 state.error = null;

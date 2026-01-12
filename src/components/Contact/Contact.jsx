@@ -6,10 +6,11 @@ import Button from "@mui/material/Button";
 import ResponsiveDialog from "../ResponsiveDialog/ResponsiveDialog";
 import style from "./Contact.module.css";
 
-export default function Contact({ contact: { id, name, number } }) {
+export default function Contact({ contact, openContactEditModal }) {
 	const dispatch = useDispatch();
 	const [openDialog, setOpenDialog] = useState(false);
 
+	const { id, name, number } = contact;
 	return (
 		<div className={style.contact_card}>
 			<ul className={style.contact_card_info}>
@@ -22,16 +23,26 @@ export default function Contact({ contact: { id, name, number } }) {
 					<p>{number}</p>
 				</li>
 			</ul>
-			<Button
-				variant="outlined"
-				color="primary"
-				onClick={() => {
-					setOpenDialog(true);
-				}}
-			>
-				Delete
-			</Button>
-
+			<div className={style.box_for_buttons}>
+				<Button
+					variant="outlined"
+					color="primary"
+					onClick={() => {
+						openContactEditModal(contact);
+					}}
+				>
+					Edit
+				</Button>
+				<Button
+					variant="outlined"
+					color="error"
+					onClick={() => {
+						setOpenDialog(true);
+					}}
+				>
+					Delete
+				</Button>
+			</div>
 			<ResponsiveDialog
 				open={openDialog}
 				onAccept={() => {
